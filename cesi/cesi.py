@@ -1,5 +1,6 @@
 import xmlrpclib
 import ConfigParser
+import requests
 from datetime import datetime, timedelta
 from flask import jsonify
 
@@ -10,11 +11,14 @@ class Config:
         self.CFILE = CFILE
         self.cfg = ConfigParser.ConfigParser()
         self.cfg.read(self.CFILE)
+        self.etcd_nodes = {}
 
         self.node_list = []
         for name in self.cfg.sections():
             if name[:4] == 'node':
                 self.node_list.append(name[5:])
+            elif name == 'etcd':
+                self.processEtcdNodes()
 
         self.environment_list = []
         for name in self.cfg.sections():
@@ -26,14 +30,38 @@ class Config:
             if name[:5] == 'group':
                 self.group_list.append(name[6:])
 
-        
+    def processEtcdNodes(self):
+        r = requests.get(self.cfg.get('etcd', 'discovery') + 'v2/keys' + self.cfg.get('etcd', 'key') + '?recursive=true')
+        etcd_nodes = r.json()
+        for spvs in etcd_nodes['node']['nodes']:
+            for data_node in spvs['nodes']:
+                hostname = ''
+                ipaddr = ''
+                port = ''
+                if data_node['key'].endswith('ipaddr'):
+                    ipaddr = data_node['value']
+
+                if data_node['key'].endswith('hostname'):
+                    hostname = data_node['value']
+
+                if data_node['key'].endswith('port'):
+                    port = data_node['value']
+
+                self.etcd_nodes[hostname] = NodeConfig(hostname, ipaddr, port, None, None )
+                self.node_list.append(hostname)
+
     def getNodeConfig(self, node_name):
         self.node_name = "node:%s" % (node_name)
-        self.username = self.cfg.get(self.node_name, 'username')
-        self.password = self.cfg.get(self.node_name, 'password')
-        self.host = self.cfg.get(self.node_name, 'host')
-        self.port = self.cfg.get(self.node_name, 'port')
-        self.node_config = NodeConfig(self.node_name, self.host, self.port, self.username, self.password)
+        self.node_config = None
+        if self.cfg.has_section(self.node_name):     
+            self.username = self.cfg.get(self.node_name, 'username')
+            self.password = self.cfg.get(self.node_name, 'password')
+            self.host = self.cfg.get(self.node_name, 'host')
+            self.port = self.cfg.get(self.node_name, 'port')
+            self.node_config = NodeConfig(self.node_name, self.host, self.port, self.username, self.password)
+        elif self.node_name in self.etcd_nodes:
+            self.node_config = self.etcd_nodes[self.node_name]
+
         return self.node_config
 
     def getMemberNames(self, environment_name):
@@ -50,6 +78,9 @@ class Config:
 
     def getHost(self):
         return str(self.cfg.get('cesi', 'host'))
+
+    def getBindPort(self):
+        return str(self.cfg.get('cesi', 'port'))
 
 class NodeConfig:
 

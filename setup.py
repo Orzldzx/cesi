@@ -11,7 +11,8 @@ setup(
   author='Gulsah Kose',
   author_email='gulsah.1004@gmail.com',
   install_requires=[
-  "Flask==0.10.1"
+    "Flask==0.10.1",
+    "requests"
   ],
   include_package_data=True,
   packages=['pack'],
