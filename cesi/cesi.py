@@ -33,22 +33,25 @@ class Config:
     def processEtcdNodes(self):
         r = requests.get(self.cfg.get('etcd', 'discovery') + 'v2/keys' + self.cfg.get('etcd', 'key') + '?recursive=true')
         etcd_nodes = r.json()
-        for spvs in etcd_nodes['node']['nodes']:
-            for data_node in spvs['nodes']:
-                hostname = ''
-                ipaddr = ''
-                port = ''
-                if data_node['key'].endswith('ipaddr'):
-                    ipaddr = data_node['value']
+        print etcd_nodes['node']
+        if 'node' in etcd_nodes.keys() and 'nodes' in etcd_nodes['node'].keys():
+            for spvs in etcd_nodes['node']['nodes']:
+                if 'nodes' in spvs['node'].keys():
+                    for data_node in spvs['nodes']:
+                        hostname = ''
+                        ipaddr = ''
+                        port = ''
+                        if data_node['key'].endswith('ipaddr'):
+                            ipaddr = data_node['value']
 
-                if data_node['key'].endswith('hostname'):
-                    hostname = data_node['value']
+                        if data_node['key'].endswith('hostname'):
+                            hostname = data_node['value']
 
-                if data_node['key'].endswith('port'):
-                    port = data_node['value']
+                        if data_node['key'].endswith('port'):
+                            port = data_node['value']
 
-                self.etcd_nodes[hostname] = NodeConfig(hostname, ipaddr, port, None, None )
-                self.node_list.append(hostname)
+                        self.etcd_nodes[hostname] = NodeConfig(hostname, ipaddr, port, None, None )
+                        self.node_list.append(hostname)
 
     def getNodeConfig(self, node_name):
         self.node_name = "node:%s" % (node_name)
