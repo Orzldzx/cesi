@@ -72,9 +72,9 @@ def control():
         if not cur.fetchall():
             session.clear()
             add_log = open(ACTIVITY_LOG, "a")
-            add_log.write("%s - Login fail. Username is not avaible.\n"%( datetime.now().ctime() ))
+            add_log.write("%s - Login fail. Username does not exists.\n"%( datetime.now().ctime() ))
             return jsonify(status = "warning",
-                           message = "Username is not  avaible ")
+                           message = "Username or password are incorrect.")
         else:
             cur.execute("select * from userinfo where username=?",(username,))
             if password == cur.fetchall()[0][1]:
@@ -90,7 +90,7 @@ def control():
                 add_log = open(ACTIVITY_LOG, "a")
                 add_log.write("%s - Login fail. Invalid password.\n"%( datetime.now().ctime() ))
                 return jsonify(status = "warning",
-                               message = "Invalid password")
+                               message = "Username or password are incorrect.")
 
 # Render login page
 @app.route('/login', methods = ['GET', 'POST'])

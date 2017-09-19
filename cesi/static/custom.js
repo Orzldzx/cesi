@@ -712,8 +712,8 @@ var $selectgroupenv = function(){
                             $tr = $('.'+$nodename+'x'+$group_name+'x'+$name+'x'+$environment_name);
                         
                             if($usertype == 0 || $usertype == 1){
-                            	//check
-                            	$tr.append('<td> <input type="checkbox" class="single" node="'+$nodename+'" procname="'+$group_name+':'+$name+'"> </td>');
+                                //check
+                                $tr.append('<td> <input type="checkbox" class="single" node="'+$nodename+'" procname="'+$group_name+':'+$name+'"> </td>');
                             }                    
                             //pid
                             if($pid == 0){
@@ -742,7 +742,7 @@ var $selectgroupenv = function(){
                             }else{
                                 $tr.append('<td class="alert alert-warning">'+$statename+ '</td>');
                             }
-   			    if($usertype == 0 || $usertype == 1){ 
+                if($usertype == 0 || $usertype == 1){ 
                             //buttons
                                 if( $state==20 ){
                                     $tr.append('<td></td>');
@@ -769,9 +769,9 @@ var $selectgroupenv = function(){
                                     var $btn_stop = $td.children('button').first();
                                     $btn_stop.click($buttonactions);
                                 }
-			    }
+                }
     
-			    if($usertype == 0 || $usertype == 1 || $usertype == 2){
+                if($usertype == 0 || $usertype == 1 || $usertype == 2){
                             //Readlog
                             $tr.append('<td><a class="btn btn-primary btn-block act" nodename="'+$nodename+'" processgroup="'+$group_name+'" processname="'+$name+'" url="/node/'+$nodename+'/process/'+$group_name+':'+$name+'/readlog"> Readlog </a></td>');
                             var $readlog = $tr.children('td').last().children('a').first();
@@ -840,7 +840,7 @@ var $selectgroupenv = function(){
                                     }
                                 });
                             });
-			    }
+                }
                         }
                     }
                 }
