@@ -50,7 +50,7 @@ class Config:
                             port = data_node['value']
 
                         if hostname is not None and name is not None:
-                            self.etcd_nodes[hostname] = NodeConfig(name, hostname, port, None, None )
+                            self.etcd_nodes[name] = NodeConfig(name, hostname, port, '', '' )
                             self.node_list.append(name)
 
     def getNodeConfig(self, node_name):
